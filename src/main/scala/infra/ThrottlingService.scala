@@ -26,6 +26,7 @@ class CachedThrottlingService[F[_]: Sync](
     token match {
       case Some(token) =>
         cachedUsers.get(token).fold(slaService.getSlaByToken(token))(Sync[F].pure)
+          //TODO add logger
           .flatMap { sla =>
             rpsCacheService.checkRps(sla).flatTap(allowed => Sync[F].delay(println(s"Request for $token ${if(allowed) "allowed" else "not allowed"}")))
 
